@@ -42,10 +42,10 @@ curl --location 'http://localhost:5000/metrics'
 
 * Build docker image
 ```bash
-docker build -t flask-poc-app .
+docker build -t person-app .
 ```
 
 * Run container
 ```bash
-docker run -d -p 5000:5000 --name flask-app-poc-container flask-poc-app
+docker run -d -p 5000:5000 --name person-app-container person-app
 ```
