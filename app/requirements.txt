@@ -1,0 +1,4 @@
+Flask
+pytest
+prometheus-flask-exporter
+requests
