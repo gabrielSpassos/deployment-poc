@@ -11,24 +11,18 @@ spec:
     command:
     - cat
     tty: true
-  - name: helm
-    image: alpine/helm:3.14.4
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: kubeconfig
-      mountPath: /root/.kube
-  volumes:
-  - name: kubeconfig
-    secret:
-      secretName: jenkins-kubeconfig
 """
     }
   }
 
   environment {
-    REPO_URL = 'https://github.com/gabrielSpassos/docker-studies.git'
+    REPO_URL = 'https://github.com/gabrielSpassos/deployment-poc.git'
+    APP_NAME = 'person-app'
+    DOCKER_REGISTRY_FOR_KANIKO = 'docker-registry.iac.svc.cluster.local:5000'
+    DOCKER_REGISTRY_FOR_HELM = 'localhost:30500'
+    NAMESPACE = 'app'
+    HELM_CHART_PATH = './helm'
+    VERSION = "${env.BUILD_NUMBER}"
   }
 
   stages {
@@ -52,7 +46,7 @@ spec:
     stage('Install Dependencies') {
       steps {
         container('python') {  
-          dir('devops-poc/app') {
+          dir('app') {
             sh 'echo "Installing dependencies..."'
             sh 'pip install -r requirements.txt'
           }
@@ -63,7 +57,7 @@ spec:
     stage('Run Tests') {
       steps {
         container('python') {  
-          dir('devops-poc/app') {
+          dir('app') {
             sh 'echo "Running tests..."'
             sh 'pytest test'
           }
@@ -80,19 +74,71 @@ spec:
       }
     }
 
-    stage('Deploy with Helm') {
-      steps {
-        container('helm') {
-          dir('devops-poc/app') {
-            sh '''
-              helm upgrade --install flask-poc-app ./helm-chart \
-                --namespace devops-poc-application-namespace
-            '''
+    stage('Build and Push with Kaniko') {
+      agent {
+          kubernetes {
+              yaml """
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                - name: kaniko
+                  image: gcr.io/kaniko-project/executor:debug
+                  imagePullPolicy: Always
+                  command:
+                  - sleep
+                  args:
+                  - infinity
+              """
+              defaultContainer 'kaniko'
           }
-        }
+      }
+      steps {
+          dir('app') {
+              sh """
+              /kaniko/executor --context=\$(pwd) \
+                                --destination=${DOCKER_REGISTRY_FOR_KANIKO}/${APP_NAME}:${VERSION} \
+                                --insecure \
+                                --skip-tls-verify
+              """
+          }
       }
     }
 
+    stage('Deploy') {
+        agent {
+            kubernetes {
+                yaml """
+                apiVersion: v1
+                kind: Pod
+                spec:
+                  containers:
+                  - name: helm-kubectl
+                    image: dtzar/helm-kubectl:latest
+                    command:
+                    - sleep
+                    args:
+                    - infinity
+                """
+                defaultContainer 'helm-kubectl'
+            }
+        }
+        steps {
+            dir('app') {
+                sh """
+                sed -i 's|tag: .*|tag: ${VERSION}|g' ${HELM_CHART_PATH}/values.yaml
+                sed -i 's|repository: .*|repository: ${DOCKER_REGISTRY_FOR_HELM}/${APP_NAME}|g' ${HELM_CHART_PATH}/values.yaml
+                """
+
+                echo "Deploying with Helm..."
+                sh "helm upgrade --install ${APP_NAME} ${HELM_CHART_PATH} --namespace ${NAMESPACE}"
+
+                echo "Verifying deployment..."
+                sh "kubectl rollout status deployment/${APP_NAME} -n ${NAMESPACE}"
+                sh "kubectl get pods -l app=${APP_NAME} -n ${NAMESPACE}"
+            }
+        }
+    }
   }
 
   post {
