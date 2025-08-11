@@ -20,11 +20,12 @@ echo ""
 echo "\nWaiting for services to be ready..."
 sleep 20
 
+mkdir -p logs
 nohup kubectl port-forward svc/prometheus-server 30001:80 \
-  -n devops-poc-infra-namespace --address 0.0.0.0 > logs/prometheus.log 2>&1 &
+  -n deployment-poc-infra-namespace --address 0.0.0.0 > logs/prometheus.log 2>&1 &
 
 nohup kubectl port-forward svc/grafana 30002:80 \
-  -n devops-poc-infra-namespace --address 0.0.0.0 > logs/grafana.log 2>&1 &
+  -n deployment-poc-infra-namespace --address 0.0.0.0 > logs/grafana.log 2>&1 &
 
 nohup kubectl port-forward svc/jenkins 30003:80 \
-  -n devops-poc-infra-namespace --address 0.0.0.0 > logs/jenkins.log 2>&1 &
+  -n deployment-poc-infra-namespace --address 0.0.0.0 > logs/jenkins.log 2>&1 &

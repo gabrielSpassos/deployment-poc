@@ -108,6 +108,14 @@ resource "helm_release" "grafana" {
     {
       name  = "service.nodePort"
       value = "30002"
+    },
+    {
+      name  = "adminUser"
+      value = "admin"
+    },
+    {
+      name  = "adminPassword"
+      value = "admin"
     }
   ]
 }
@@ -143,6 +151,7 @@ resource "helm_release" "jenkins" {
   repository        = "https://charts.jenkins.io"
   namespace         = kubernetes_namespace.deployment_poc_infra_namespace.metadata[0].name
   create_namespace  = false
+  version           = "5.8.72"
   timeout           = 900 # 15 minutes
   set        = [
     {
@@ -151,48 +160,19 @@ resource "helm_release" "jenkins" {
     },
     {
       name  = "controller.servicePort"
-      value = "8080"
+      value = "80"
     },
     {
       name  = "controller.nodePort"
       value = "30003"
+    },
+    {
+      name  = "controller.admin.username"
+      value = "admin"
+    },
+    {
+      name  = "controller.admin.password"
+      value = "admin"
     }
-  ]
-  values    = [
-    <<-EOT
-    controller:
-      serviceType: NodePort
-      servicePort: 8080
-      nodePort: 30003
-
-      JCasC:
-        configScripts:
-          jobs: |
-            jobs:
-              - script: >
-                  pipelineJob('deployment/person-app') {
-                    definition {
-                      cpsScm {
-                        scm {
-                          git {
-                            remote {
-                              url('https://github.com/gabrielSpassos/deployment-poc.git')
-                            }
-                            branch('*/main')
-                          }
-                        }
-                        scriptPath('app/Jenkinsfile')
-                      }
-                    }
-                  }
-
-      installPlugins:
-        - git:latest
-        - workflow-aggregator:latest
-        - job-dsl:latest
-        - configuration-as-code:latest
-        - kubernetes:latest
-        - kubernetes-cli:latest
-    EOT
   ]
 }
