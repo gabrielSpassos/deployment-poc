@@ -29,7 +29,7 @@ spec:
     stage('Clone Repository') {
       steps {
         container('python') {
-          git url: "${REPO_URL}", branch: 'master'
+          git url: "${REPO_URL}", branch: 'main'
         } 
       }
     }
