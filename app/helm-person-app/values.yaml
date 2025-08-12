@@ -16,7 +16,7 @@ image:
 service:
   type: NodePort
   port: 5000
-  nodePort: 30003
+  nodePort: 30005
 
 containerPort: 5000
 
