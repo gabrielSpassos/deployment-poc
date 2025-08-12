@@ -14,6 +14,12 @@ The pipelines in Jenkins need to run tests and fail if tests fail.
 
 OpenTofu need to have automated tests as well, all apps deployed need to be integrated with Grafana and Prometheus by default.
 
+* Get minikube status and start
+```bash
+minikube status
+minikube start --driver=docker
+```
+
 * Get nodes
 ```bash
 kubectl get nodes -A
