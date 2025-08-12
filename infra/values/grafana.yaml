@@ -5,5 +5,5 @@ datasources:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: http://prometheus-server.iac.svc.cluster.local
+        url: http://prometheus-server.deployment-poc-infra-namespace.svc.cluster.local
         isDefault: true
