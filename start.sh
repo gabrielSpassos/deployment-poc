@@ -6,7 +6,9 @@ cd infra
 
 rm -rf .terraform .terraform.lock.hcl terraform.*
 
-minikube start --driver=docker
+minikube start --memory=4096 --cpus=4 --driver=docker
+
+minikube update-context
 
 kubectl config use-context minikube
 
