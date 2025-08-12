@@ -20,8 +20,8 @@ spec:
     APP_NAME = 'person-app'
     DOCKER_REGISTRY_FOR_KANIKO = 'docker-registry.deployment-poc-infra-namespace.svc.cluster.local:5000'
     DOCKER_REGISTRY_FOR_HELM = 'localhost:30004'
-    NAMESPACE = 'app'
-    HELM_CHART_PATH = './helm'
+    NAMESPACE = 'deployment-poc-application-namespace'
+    HELM_CHART_PATH = './helm-person-app'
     VERSION = "${env.BUILD_NUMBER}"
   }
 
