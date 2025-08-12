@@ -124,7 +124,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "refId": "A"
             }
           ],
@@ -392,7 +392,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "HTTP {{ status }}",
+              "legendFormat": "HTTP {{`{{ status }}`}}",
               "refId": "A"
             }
           ],
@@ -493,7 +493,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "refId": "A"
             }
           ],
@@ -598,7 +598,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "refId": "A"
             }
           ],
@@ -804,7 +804,7 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "refId": "A"
             }
           ],
@@ -908,7 +908,7 @@ data:
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ path }}",
+              "legendFormat": "{{`{{ path }}`}}",
               "refId": "A"
             }
           ],
